@@ -1,5 +1,7 @@
 package aj.projects.backenduserregistration.appuser;
 
+import aj.projects.backenduserregistration.registration.token.ConfirmationToken;
+import aj.projects.backenduserregistration.registration.token.ConfirmationTokenService;
 import aj.projects.backenduserregistration.security.PasswordEncoder;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,6 +9,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Created by: Alhamza Aljamaly
@@ -20,6 +25,7 @@ public class AppUserService implements UserDetailsService {
     private final IUserRepository iUserRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final static String USER_NOT_FOUND_ALERT = "User with email id %s is not found!";
+    private final ConfirmationTokenService confirmationTokenService;
 
     /**
      * Method to Return AppUser by providing the email address.
@@ -52,8 +58,14 @@ public class AppUserService implements UserDetailsService {
         appUser.setPassword(encodedPassword);
         iUserRepository.save(appUser);
 
-        //TODO: Send Confirmation Token
+        String token = UUID.randomUUID().toString(); //generate a random token
+        ConfirmationToken confirmationToken = new ConfirmationToken(
+                token, LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(15), appUser);
+        confirmationTokenService.saveConfirmationToken(confirmationToken);
 
-        return "it works";
+        //TODO: Send Email
+
+        return token;
     }
 }
