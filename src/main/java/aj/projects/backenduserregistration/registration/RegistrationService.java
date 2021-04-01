@@ -43,7 +43,7 @@ public class RegistrationService {
             throw new IllegalStateException("Token is Expired!");
         }
         confirmationTokenService.setConfirmedAt(token);
-        //TODO: ENABLE USER EMAIL //you have to enable that service from AppUserService
+        appUserService.enableAppUser(confirmationToken.getAppUser().getEmail());
         return "it works";
 
     }
