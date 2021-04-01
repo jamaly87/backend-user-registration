@@ -3,7 +3,10 @@ package aj.projects.backenduserregistration.email;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -13,17 +16,21 @@ import javax.mail.internet.MimeMessage;
 @AllArgsConstructor
 public class EmailService implements EmailSender{
     private final static Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
-
     private JavaMailSender javaMailSender;
     @Override
+    @Async
     public void send(String to, String email) {
         try {
-            //TODO: write business logic to send email.
-
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage,"UTF-8");
+            helper.setText(email,true);
+            helper.setTo(to);
+            helper.setSubject("Please Confirm Your Email Address");
+            helper.setFrom("info@alhamzaaljamaly.com");
+            javaMailSender.send(mimeMessage);
         } catch (MessagingException e){
             LOGGER.error("Failed to Send Email!",e);
             throw new IllegalStateException("Failed to Send Email");
         }
-
     }
 }

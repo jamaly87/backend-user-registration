@@ -5,10 +5,16 @@ import org.springframework.stereotype.Service;
 import java.util.function.Predicate;
 @Service
 public class EmailValidator implements Predicate<String> {
+    public final String EMAIL_PATTERN ="^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
 
     @Override
     public boolean test(String s) {
-        // TODO: in order to activate it, we need to add a Regex for email validation
-        return true;
+
+        if (s.matches(EMAIL_PATTERN)){
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }
